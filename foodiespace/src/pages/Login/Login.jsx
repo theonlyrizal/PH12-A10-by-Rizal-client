@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import SectionBody from '../../wrappers/SectionBody';
 import { FaGoogle } from 'react-icons/fa';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const { signInUser, signInWithGoogle, user } = useContext(AuthContext);
@@ -21,21 +22,12 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false); // ✅ password toggle
 
   useEffect(() => {
-    if (error) {
-      Swal.fire({
-        icon: 'error',
-        title: `${error}`,
-      });
-    }
+    if (error) toast.error(error);
   }, [error]);
 
   useEffect(() => {
     if (success) {
-      Swal.fire({
-        title: 'Good job!',
-        text: 'You clicked the button!',
-        icon: 'success',
-      });
+      toast.success(`Login Successful!`);
       setSuccess(false);
     }
   }, [success]);

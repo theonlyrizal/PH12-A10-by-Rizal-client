@@ -1,10 +1,11 @@
 import { useLocalStorage } from '@uidotdev/usehooks';
 import React, { useContext, useEffect } from 'react';
-import { NavLink } from 'react-router';
+import { Link, NavLink } from 'react-router';
+import npcdp from '../../assets/images/npc-user.png';
 import { AuthContext } from '../../context/AuthContext';
 
 const Navbar = () => {
-  const { user } = useContext(AuthContext);
+  const { user, signOutUser, loading } = useContext(AuthContext);
 
   const [isDark, setIsDark] = useLocalStorage('darkMode', false);
 
@@ -38,13 +39,13 @@ const Navbar = () => {
           </NavLink>
         </li>
       )}
-      {!user && (
+      {/* {!user && (
         <li>
           <NavLink className="rounded-full" to="/login">
             Login
           </NavLink>
         </li>
-      )}
+      )} */}
     </>
   );
 
@@ -73,24 +74,68 @@ const Navbar = () => {
             tabIndex="-1"
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow space-x-2"
           >
-            {links}
+            {loading ? <div className="skeleton h-auto w-32"></div> : links}
           </ul>
         </div>
         <a className="btn btn-ghost text-xl">daisyUI</a>
       </div>
       <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">{links}</ul>
+        <ul className="menu menu-horizontal px-1">
+          {loading ? (
+            <div className="flex space-x-2">
+              <div className="skeleton h-8 w-28"></div>
+              <div className="skeleton h-8 w-28"></div>
+              <div className="skeleton h-8 w-28"></div>
+            </div>
+          ) : (
+            links
+          )}
+        </ul>
       </div>
-      <div className="navbar-end">
-        <a className="btn">Button</a>
+      <div className="navbar-end gap-2 md:gap-4">
+        {user ? (
+          <div className="dropdown dropdown-end hover:cursor-pointer">
+            <div tabIndex={0} role="button">
+              <div className="join h-10 items-center max-w-[180px] overflow-hidden">
+                <img
+                  className="join-item h-8 w-8 md:h-10 md:w-10 rounded-full object-cover"
+                  src={user.photoURL || npcdp}
+                  alt="user avatar"
+                />
+                <p className="px-2 text-sm font-semibold truncate">{user.displayName}</p>
+              </div>
+            </div>
+            <ul
+              tabIndex={-1}
+              className="dropdown-content menu bg-base-100 rounded-box z-100 w-52 p-2 shadow-sm"
+            >
+              <li>
+                <Link to="/my-profile">My Profile</Link>
+              </li>
+              <li>
+                <button
+                  onClick={signOutUser}
+                  className="btn btn-outline btn-error hover:text-white"
+                >
+                  Sign Out
+                </button>
+              </li>
+            </ul>
+          </div>
+        ) : (
+          <div className="join rounded-full">
+            <Link
+              to="/login"
+              className="btn btn-base border-2 border-primary rounded-full join-item btn-sm md:btn-md"
+            >
+              Login
+            </Link>
+          </div>
+        )}
       </div>
       <label className="swap swap-rotate pl-3">
         {/* Controlled checkbox */}
-        <input
-          type="checkbox"
-          checked={isDark} // ✅ keeps toggle synced with localStorage
-          onChange={() => setIsDark(!isDark)}
-        />
+        <input type="checkbox" checked={isDark} onChange={() => setIsDark(!isDark)} />
 
         {/* Moon icon - shown when checked (dark mode) */}
         <svg
