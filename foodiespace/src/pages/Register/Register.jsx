@@ -5,9 +5,11 @@ import SectionBody from '../../wrappers/SectionBody';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { FaArrowRight, FaGoogle } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import useAxios from '../../hooks/useAxios';
 
 const Register = () => {
   const { createUser, updateUserProfile, signInWithGoogle } = useContext(AuthContext);
+  const axiosInstance = useAxios();
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -55,6 +57,18 @@ const Register = () => {
       await createUser(email, password);
       await updateUserProfile(name, photo);
 
+      //make user
+      const newUser = {
+        name,
+        email,
+        photoURL: photo,
+        createdAt: new Date(),
+        favorites: [],
+      };
+      //send to mongoDb
+      const res = await axiosInstance.post('/users', newUser);
+      console.log('data after user save:', res.data);
+
       setSuccess(true);
       e.target.reset();
       navigate(location.state || '/');
@@ -64,16 +78,27 @@ const Register = () => {
   };
 
   const handleGoogleSignIn = () => {
-    setError('');
-    setSuccess(false);
-
     signInWithGoogle()
-      .then(() => {
-        setSuccess(true);
-        navigate(location.state || '/');
+      .then(async (result) => {
+        console.log(result.user);
+
+        const newUser = {
+          name: result.user.displayName,
+          email: result.user.email,
+          photoURL: result.user.photoURL,
+          createdAt: new Date(),
+          favorites: [],
+        };
+
+        try {
+          const res = await axiosInstance.post('/users', newUser);
+          console.log('data after user save:', res.data);
+        } catch (err) {
+          console.error('Error saving user:', err);
+        }
       })
       .catch((error) => {
-        setError(error.message);
+        console.error('Google sign-in error:', error);
       });
   };
 

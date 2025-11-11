@@ -6,9 +6,12 @@ import SectionBody from '../../wrappers/SectionBody';
 import { FaGoogle } from 'react-icons/fa';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { toast } from 'react-toastify';
+import useAxios from '../../hooks/useAxios';
 
 const Login = () => {
   const { signInUser, signInWithGoogle, user } = useContext(AuthContext);
+
+  const axiosInstance = useAxios();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -19,7 +22,7 @@ const Login = () => {
 
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // ✅ password toggle
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (error) toast.error(error);
@@ -74,7 +77,22 @@ const Login = () => {
     setError('');
     setSuccess(false);
     signInWithGoogle()
-      .then(() => {
+      .then(async (result) => {
+        const newUser = {
+          name: result.user.displayName,
+          email: result.user.email,
+          photoURL: result.user.photoURL,
+          createdAt: new Date(),
+          favorites: [],
+        };
+
+        try {
+          const res = await axiosInstance.post('/users', newUser);
+          console.log('data after user save:', res.data);
+        } catch (err) {
+          console.error('Error saving user:', err);
+        }
+
         setSuccess(true);
         navigate(location.state || '/');
       })
