@@ -3,6 +3,7 @@ import React, { useContext, useEffect } from 'react';
 import { Link, NavLink } from 'react-router';
 import npcdp from '../../assets/images/npc-user.png';
 import { AuthContext } from '../../context/AuthContext';
+import logogif from '../../assets/images/logoGif.gif';
 
 const Navbar = () => {
   const { user, signOutUser, loading } = useContext(AuthContext);
@@ -77,7 +78,18 @@ const Navbar = () => {
             {loading ? <div className="skeleton h-auto w-32"></div> : links}
           </ul>
         </div>
-        <a className="btn btn-ghost text-xl">daisyUI</a>
+        <Link
+          to="/"
+          className="btn btn-ghost text-2xl bg-clip-text text-transparent"
+          style={{
+            WebkitTextStroke: '0.3px gray',
+            backgroundImage: `url(${logogif})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          foodieSpace
+        </Link>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
