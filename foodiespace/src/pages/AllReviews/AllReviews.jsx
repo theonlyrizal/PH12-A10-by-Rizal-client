@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { FaSearch, FaTimes } from 'react-icons/fa';
+import { FaSearch, FaTimes, FaDish } from 'react-icons/fa';
 import SectionBody from '../../wrappers/SectionBody';
 import { DataContext } from '../../context/DataContext/DataContext';
 import useAxios from '../../hooks/useAxios';
@@ -56,7 +56,10 @@ const AllReviews = () => {
   return (
     <div>
       <div className="flex flex-col justify-center items-center bg-primary p-5 my-5">
-        <h1 className="text-secondary-content text-3xl font-bold">All Genuine Reviews 🍴</h1>
+        <div className="flex items-center gap-3">
+          <FaDish className="text-secondary-content text-3xl" />
+          <h1 className="text-secondary-content text-3xl font-bold">All Genuine Reviews</h1>
+        </div>
         <p className="text-secondary-content text-sm mt-2">Explore reviews from our community</p>
       </div>
 
@@ -65,8 +68,9 @@ const AllReviews = () => {
         <form onSubmit={handleSearch} className="mb-8">
           <div className="form-control">
             <label className="label">
-              <span className="label-text font-semibold text-lg">
-                🔍 Search Reviews by Food Name
+              <span className="label-text font-semibold text-lg flex items-center gap-2">
+                <FaSearch size={18} />
+                Search Reviews by Food Name
               </span>
             </label>
             <div className="input-group">
