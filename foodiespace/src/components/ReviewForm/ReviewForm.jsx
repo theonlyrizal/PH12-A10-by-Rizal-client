@@ -1,23 +1,27 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { AuthContext } from '../../context/AuthContext/AuthContext';
+import { DataContext } from '../../context/DataContext/DataContext';
 import useAxios from '../../hooks/useAxios';
-import FormInput from '../FormInput/FormInput';
-import StarRating from '../StarRating/StarRating';
+// Form inputs inlined to keep review form self-contained
+import { Rating } from 'next-flex-rating';
 
 const ReviewForm = () => {
   const { user } = useContext(AuthContext);
   const axiosInstance = useAxios();
   const navigate = useNavigate();
+  const { setReviewsData } = useContext(DataContext);
 
   const [formData, setFormData] = useState({
     foodName: '',
     foodImage: '',
     restaurantName: '',
     restaurantLocation: '',
-    starRating: 0,
     reviewText: '',
   });
+
+  // Rating state (uses next-flex-rating)
+  const [rating, setRating] = useState(3);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -28,13 +32,6 @@ const ReviewForm = () => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }));
-  };
-
-  const handleStarChange = (rating) => {
-    setFormData((prev) => ({
-      ...prev,
-      starRating: rating,
     }));
   };
 
@@ -55,7 +52,7 @@ const ReviewForm = () => {
       setError('Restaurant location is required');
       return false;
     }
-    if (formData.starRating === 0) {
+    if (rating === 0) {
       setError('Please select a star rating');
       return false;
     }
@@ -85,7 +82,7 @@ const ReviewForm = () => {
         foodImage: formData.foodImage,
         restaurantName: formData.restaurantName,
         restaurantLocation: formData.restaurantLocation,
-        starRating: parseInt(formData.starRating),
+        starRating: parseInt(rating),
         reviewText: formData.reviewText,
         userEmail: user.email,
         userName: user.displayName || 'Anonymous',
@@ -102,14 +99,25 @@ const ReviewForm = () => {
 
       if (response.status === 200 || response.status === 201) {
         setSuccess(true);
+        // Update local context so new review appears immediately
+        try {
+          const created = response.data;
+          if (created) {
+            setReviewsData((prev) => [created, ...(prev || [])]);
+          }
+        } catch (err) {
+          // ignore context update failures
+          console.warn('Failed to update reviewsData in context', err);
+        }
+
         setFormData({
           foodName: '',
           foodImage: '',
           restaurantName: '',
           restaurantLocation: '',
-          starRating: 0,
           reviewText: '',
         });
+        setRating(3);
 
         // Redirect to All Reviews after 2 seconds
         setTimeout(() => {
@@ -183,24 +191,39 @@ const ReviewForm = () => {
         <h3 className="text-xl font-bold mb-4">Food Details</h3>
 
         <div className="space-y-4">
-          <FormInput
-            label="Food Name"
-            name="foodName"
-            value={formData.foodName}
-            onChange={handleInputChange}
-            placeholder="e.g., Spicy Chicken Biryani"
-            required
-          />
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text font-semibold">
+                Food Name
+                <span className="text-red-500 ml-1">*</span>
+              </span>
+            </label>
+            <input
+              type="text"
+              name="foodName"
+              value={formData.foodName}
+              onChange={handleInputChange}
+              placeholder="e.g., Spicy Chicken Biryani"
+              className="input input-bordered w-full"
+            />
+          </div>
 
-          <FormInput
-            label="Food Image URL"
-            name="foodImage"
-            type="url"
-            value={formData.foodImage}
-            onChange={handleInputChange}
-            placeholder="e.g., https://example.com/image.jpg"
-            required
-          />
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text font-semibold">
+                Food Image URL
+                <span className="text-red-500 ml-1">*</span>
+              </span>
+            </label>
+            <input
+              type="url"
+              name="foodImage"
+              value={formData.foodImage}
+              onChange={handleInputChange}
+              placeholder="e.g., https://example.com/image.jpg"
+              className="input input-bordered w-full"
+            />
+          </div>
 
           {formData.foodImage && (
             <div className="mt-4">
@@ -221,23 +244,39 @@ const ReviewForm = () => {
         <h3 className="text-xl font-bold mb-4">Restaurant Information</h3>
 
         <div className="space-y-4">
-          <FormInput
-            label="Restaurant Name"
-            name="restaurantName"
-            value={formData.restaurantName}
-            onChange={handleInputChange}
-            placeholder="e.g., Tandoori Nights"
-            required
-          />
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text font-semibold">
+                Restaurant Name
+                <span className="text-red-500 ml-1">*</span>
+              </span>
+            </label>
+            <input
+              type="text"
+              name="restaurantName"
+              value={formData.restaurantName}
+              onChange={handleInputChange}
+              placeholder="e.g., Tandoori Nights"
+              className="input input-bordered w-full"
+            />
+          </div>
 
-          <FormInput
-            label="Restaurant Location"
-            name="restaurantLocation"
-            value={formData.restaurantLocation}
-            onChange={handleInputChange}
-            placeholder="e.g., Dhaka, Bangladesh"
-            required
-          />
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text font-semibold">
+                Restaurant Location
+                <span className="text-red-500 ml-1">*</span>
+              </span>
+            </label>
+            <input
+              type="text"
+              name="restaurantLocation"
+              value={formData.restaurantLocation}
+              onChange={handleInputChange}
+              placeholder="e.g., Dhaka, Bangladesh"
+              className="input input-bordered w-full"
+            />
+          </div>
         </div>
       </div>
 
@@ -247,17 +286,37 @@ const ReviewForm = () => {
         <h3 className="text-xl font-bold mb-4">Your Rating & Review</h3>
 
         <div className="space-y-4">
-          <StarRating value={formData.starRating} onChange={handleStarChange} />
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text font-semibold">
+                Star Rating
+                <span className="text-red-500 ml-1">*</span>
+              </span>
+            </label>
+            <div className="flex items-center gap-4">
+              <Rating value={rating} onChange={setRating} />
+              {rating > 0 && (
+                <span className="ml-4 font-semibold text-yellow-500">{rating} / 5</span>
+              )}
+            </div>
+          </div>
 
-          <FormInput
-            label="Review Text"
-            name="reviewText"
-            value={formData.reviewText}
-            onChange={handleInputChange}
-            placeholder="Share your honest thoughts about this food..."
-            textarea
-            required
-          />
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text font-semibold">
+                Review Text
+                <span className="text-red-500 ml-1">*</span>
+              </span>
+            </label>
+            <textarea
+              name="reviewText"
+              value={formData.reviewText}
+              onChange={handleInputChange}
+              placeholder="Share your honest thoughts about this food..."
+              className="textarea textarea-bordered w-full"
+              rows="5"
+            ></textarea>
+          </div>
         </div>
       </div>
 

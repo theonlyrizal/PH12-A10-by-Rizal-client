@@ -1,48 +1,52 @@
-import React, { useContext, useState } from 'react';
-import { FaSearch, FaTimes, FaDish } from 'react-icons/fa';
+import React, { useContext, useState, useEffect } from 'react';
+import { FaSearch, FaTimes } from 'react-icons/fa';
+import { FaUtensils } from 'react-icons/fa6';
+
 import SectionBody from '../../wrappers/SectionBody';
 import { DataContext } from '../../context/DataContext/DataContext';
-import useAxios from '../../hooks/useAxios';
 import ReviewsContainer from '../../components/ReviewsContainer/ReviewsContainer';
-import { toast } from 'react-toastify';
+// toast removed: client-side search no longer uses server notifications
 
 const AllReviews = () => {
   const { reviewsData } = useContext(DataContext);
-  const axiosInstance = useAxios();
-
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchPayload, setSearchPayload] = useState({ foodName: '' });
   const [filteredReviews, setFilteredReviews] = useState(null);
-  const [searching, setSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-
+  useEffect(() => {
     if (!searchQuery.trim()) {
-      toast.warning('Please enter a food name to search');
+      setFilteredReviews(null);
+      setHasSearched(false);
+    } else {
+      const q = searchQuery.toLowerCase();
+      const matched = (reviewsData || []).filter((r) =>
+        String(r.foodName || '')
+          .toLowerCase()
+          .includes(q)
+      );
+      setFilteredReviews(matched);
+    }
+  }, [reviewsData, searchQuery]);
+
+  const handleSearchChange = (value) => {
+    setSearchQuery(value);
+    setSearchPayload({ foodName: value });
+    setHasSearched(true);
+
+    const q = value.trim().toLowerCase();
+    if (!q) {
+      setFilteredReviews(null);
+      setHasSearched(false);
       return;
     }
 
-    try {
-      setSearching(true);
-      setHasSearched(true);
-      const response = await axiosInstance.get(
-        `/reviews/search?q=${encodeURIComponent(searchQuery)}`
-      );
-      setFilteredReviews(response.data);
-
-      if (response.data.length === 0) {
-        toast.info(`No reviews found for "${searchQuery}"`);
-      } else {
-        toast.success(`Found ${response.data.length} review(s)`);
-      }
-    } catch (err) {
-      toast.error('Failed to search reviews');
-      console.error('Search error:', err);
-      setFilteredReviews([]);
-    } finally {
-      setSearching(false);
-    }
+    const matched = (reviewsData || []).filter((r) =>
+      String(r.foodName || '')
+        .toLowerCase()
+        .includes(q)
+    );
+    setFilteredReviews(matched);
   };
 
   const handleClearSearch = () => {
@@ -57,15 +61,15 @@ const AllReviews = () => {
     <div>
       <div className="flex flex-col justify-center items-center bg-primary p-5 my-5">
         <div className="flex items-center gap-3">
-          <FaDish className="text-secondary-content text-3xl" />
+          <FaUtensils className="text-secondary-content text-3xl" />
           <h1 className="text-secondary-content text-3xl font-bold">All Genuine Reviews</h1>
         </div>
         <p className="text-secondary-content text-sm mt-2">Explore reviews from our community</p>
       </div>
 
       <SectionBody>
-        {/* Search Bar */}
-        <form onSubmit={handleSearch} className="mb-8">
+        {/* Search Bar (client-side, search on change) */}
+        <div className="mb-8">
           <div className="form-control">
             <label className="label">
               <span className="label-text font-semibold text-lg flex items-center gap-2">
@@ -77,17 +81,11 @@ const AllReviews = () => {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 placeholder="Search by food name (e.g., Biryani, Pizza, Sushi)..."
                 className="input input-bordered w-full"
               />
-              <button type="submit" disabled={searching} className="btn btn-primary" title="Search">
-                {searching ? (
-                  <span className="loading loading-spinner loading-sm"></span>
-                ) : (
-                  <FaSearch size={18} />
-                )}
-              </button>
+              {/* search is live on input change; no button needed */}
               {searchQuery && (
                 <button
                   type="button"
@@ -102,28 +100,32 @@ const AllReviews = () => {
             <label className="label">
               <span className="label-text-alt text-gray-500">
                 {hasSearched
-                  ? `Showing ${displayReviews.length} result(s) for "${searchQuery}"`
-                  : 'Search reviews using MongoDB for fast, accurate results'}
+                  ? `Showing ${displayReviews.length} result(s) for "${
+                      searchPayload.foodName || searchQuery
+                    }"`
+                  : 'Type to search reviews client-side'}
               </span>
             </label>
           </div>
-        </form>
+        </div>
 
-        {/* Results Info */}
         {hasSearched && (
           <div className="alert alert-info mb-6">
             <div>
               <span>
                 {filteredReviews.length === 0
-                  ? `No reviews found for "${searchQuery}". Try a different search term.`
-                  : `Found ${filteredReviews.length} review(s) matching "${searchQuery}"`}
+                  ? `No reviews found for "${
+                      searchPayload.foodName || searchQuery
+                    }". Try a different search term.`
+                  : `Found ${filteredReviews.length} review(s) matching "${
+                      searchPayload.foodName || searchQuery
+                    }"`}
               </span>
             </div>
           </div>
         )}
       </SectionBody>
 
-      {/* Reviews Container */}
       <ReviewsContainer
         reviews={displayReviews || []}
         emptyMessage={

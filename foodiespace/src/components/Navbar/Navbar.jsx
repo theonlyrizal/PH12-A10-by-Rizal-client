@@ -33,13 +33,13 @@ const Navbar = () => {
           </NavLink>
         </li>
       )}
-      {user && (
-        <li>
-          <NavLink className="rounded-full" to="/add-review">
-            Add Review
-          </NavLink>
-        </li>
-      )}
+
+      <li>
+        <NavLink className="rounded-full" to="/add-review">
+          Add Review
+        </NavLink>
+      </li>
+
       {/* {!user && (
         <li>
           <NavLink className="rounded-full" to="/login">

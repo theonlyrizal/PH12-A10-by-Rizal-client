@@ -8,7 +8,7 @@ const NotFound = () => {
     <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-primary to-base-200 px-4">
       <div className="text-center">
         <div className="mb-8">
-          <h1 className="text-9xl font-bold text-primary opacity-20 mb-2">404</h1>
+          <h1 className="text-9xl font-bold text-primary-content opacity-20 mb-2">404</h1>
           <div className="text-6xl mb-6">🍴</div>
         </div>
 
@@ -23,18 +23,6 @@ const NotFound = () => {
         <button onClick={() => navigate('/')} className="btn btn-primary btn-lg">
           🏠 Back to Home
         </button>
-
-        <div className="mt-12 text-sm text-gray-600">
-          <p>Need help? Try these:</p>
-          <div className="flex gap-4 justify-center mt-4 flex-wrap">
-            <button onClick={() => navigate('/all-reviews')} className="btn btn-ghost btn-sm">
-              Browse All Reviews
-            </button>
-            <button onClick={() => navigate('/add-review')} className="btn btn-ghost btn-sm">
-              Share Your Review
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
