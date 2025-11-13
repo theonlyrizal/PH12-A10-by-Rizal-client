@@ -161,7 +161,8 @@ const MyReviews = () => {
         <p className="text-secondary-content text-sm mt-2">Manage all your food reviews</p>
       </div>
 
-      <div className="overflow-x-auto shadow-lg rounded-lg">
+      {/* Table - Hidden on small screens */}
+      <div className="hidden sm:block overflow-x-auto shadow-lg rounded-lg">
         <table className="table w-full">
           {/* Table head */}
           <thead className="bg-primary text-primary-content">
@@ -266,6 +267,86 @@ const MyReviews = () => {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Card Layout - Visible only on small screens */}
+      <div className="sm:hidden space-y-4">
+        {reviews.map((review) => (
+          <div key={review._id} className="card bg-base-100 shadow-md border border-base-300">
+            <div className="card-body">
+              {/* Header with image and food name */}
+              <div className="flex gap-4 mb-4">
+                <div className="avatar shrink-0">
+                  <div className="mask mask-squircle h-20 w-20">
+                    <img
+                      src={review.foodImage}
+                      alt={review.foodName}
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/100?text=No+Image';
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="card-title text-lg text-primary">{review.foodName}</h3>
+                  <p className="text-sm font-semibold">{review.restaurantName}</p>
+                  <div className="text-xs text-gray-500 flex items-center gap-1">
+                    <MdLocationOn size={12} className="text-red-500" />
+                    {review.restaurantLocation}
+                  </div>
+                </div>
+              </div>
+
+              {/* Rating and Date */}
+              <div className="flex justify-between items-center mb-4 pb-4 border-b">
+                <div className="flex items-center gap-1">
+                  <FaStar className="text-yellow-400" size={14} />
+                  <span className="font-bold">{review.starRating}/5</span>
+                </div>
+                <div className="text-xs text-gray-500 text-right">
+                  <div>
+                    {new Date(review.createdAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </div>
+                  <div>
+                    {new Date(review.createdAt).toLocaleTimeString('en-US', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="card-actions justify-end gap-2">
+                <Link
+                  to={`/edit-review/${review._id}`}
+                  className="btn btn-sm btn-info text-white gap-2"
+                >
+                  <FaEdit size={14} />
+                  Edit
+                </Link>
+                <button
+                  onClick={() => handleDelete(review._id, review.foodName)}
+                  disabled={deleting === review._id}
+                  className="btn btn-sm btn-error text-white gap-2"
+                >
+                  {deleting === review._id ? (
+                    <span className="loading loading-spinner loading-sm"></span>
+                  ) : (
+                    <>
+                      <FaTrash size={14} />
+                      Delete
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Add Review Button */}
