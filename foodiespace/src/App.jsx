@@ -9,7 +9,7 @@ function App() {
   const isLoading = navigation.state === 'loading';
 
   return (
-    <div>
+    <div className="overflow-x-hidden">
       <Navbar />
       <div className="h-20"></div>
 

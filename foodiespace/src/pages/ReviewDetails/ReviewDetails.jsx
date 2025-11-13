@@ -3,7 +3,8 @@ import { useParams, Link } from 'react-router';
 import SectionBody from '../../wrappers/SectionBody';
 import useAxios from '../../hooks/useAxios';
 import { AuthContext } from '../../context/AuthContext/AuthContext';
-import { FaHeart, FaStar } from 'react-icons/fa';
+import { FaHeart, FaStar, FaArrowLeft, FaMapMarkerAlt, FaUser } from 'react-icons/fa';
+import { MdLocationOn } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
 const ReviewDetails = () => {
@@ -95,44 +96,155 @@ const ReviewDetails = () => {
 
   return (
     <SectionBody>
-      <div className="max-w-4xl mx-auto bg-base-100 shadow-md rounded-md p-6">
-        <div className="flex flex-col md:flex-row gap-6">
-          <img
-            src={review.foodImage}
-            alt={review.foodName}
-            className="w-full md:w-1/3 h-64 object-cover rounded"
-          />
+      {/* Hero Section with Image Background */}
+      <div className="relative w-full h-96 md:h-[500px] bg-linear-to-b from-primary to-primary-focus overflow-hidden mb-12">
+        <img
+          src={review.foodImage}
+          alt={review.foodName}
+          className="w-full h-full object-cover opacity-70"
+        />
+        <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent"></div>
 
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold text-primary">{review.foodName}</h1>
-            <p className="text-sm text-gray-500 mb-2">
-              <span className="font-semibold">{review.restaurantName}</span> —{' '}
-              {review.restaurantLocation}
-            </p>
+        {/* Back Button */}
+        <Link
+          to="/all-reviews"
+          className="absolute top-6 left-6 btn btn-circle btn-lg btn-primary hover:scale-110 transition-transform shadow-lg"
+        >
+          <FaArrowLeft className="text-xl" />
+        </Link>
 
-            <div className="flex items-center gap-2 mb-4">
-              <FaStar className="text-yellow-400" />
-              <span className="font-bold">{review.starRating}/5</span>
+        {/* Title Overlay */}
+        <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+          <h1 className="text-5xl md:text-6xl font-bold mb-2">{review.foodName}</h1>
+          <div className="flex items-center gap-2">
+            <MdLocationOn className="text-2xl" />
+            <p className="text-xl opacity-90">{review.restaurantName}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="max-w-6xl mx-auto px-4 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Review Details */}
+          <div className="lg:col-span-2">
+            {/* Rating Card */}
+            <div className="card bg-base-200 shadow-lg mb-6">
+              <div className="card-body">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="badge badge-lg badge-primary text-lg font-bold py-4 px-6">
+                      <FaStar className="mr-2" /> {review.starRating}/5
+                    </div>
+                    <div>
+                      <p className="text-sm opacity-70">Overall Rating</p>
+                      <p className="text-lg font-semibold">
+                        {'⭐'.repeat(Math.round(review.starRating))}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleFavorite}
+                    disabled={favoring}
+                    className={`btn btn-lg gap-2 ${isFavorite ? 'btn-error' : 'btn-outline'}`}
+                  >
+                    <FaHeart /> {isFavorite ? 'Favorited' : 'Favorite'}
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <p className="text-gray-700 italic mb-4">"{review.reviewText}"</p>
+            {/* Review Text Card */}
+            <div className="card bg-base-100 shadow-lg border border-base-300 mb-6">
+              <div className="card-body">
+                <h2 className="card-title text-2xl mb-4">Review</h2>
+                <p className="text-lg leading-relaxed text-justify italic text-gray-700">
+                  "{review.reviewText}"
+                </p>
+              </div>
+            </div>
 
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleFavorite}
-                disabled={favoring}
-                className={`btn ${isFavorite ? 'btn-error' : 'btn-outline'} gap-2`}
-              >
-                <FaHeart /> {isFavorite ? 'Favorited' : 'Add to Favorites'}
-              </button>
+            {/* Restaurant Details Card */}
+            <div className="card bg-base-100 shadow-lg border border-base-300">
+              <div className="card-body">
+                <h2 className="card-title text-xl mb-4">Restaurant Information</h2>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4 p-4 bg-base-200 rounded-lg">
+                    <MdLocationOn className="text-2xl text-primary mt-1 shrink-0" />
+                    <div>
+                      <p className="text-sm opacity-70 font-semibold">Location</p>
+                      <p className="text-lg">{review.restaurantLocation}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4 p-4 bg-base-200 rounded-lg">
+                    <FaUser className="text-2xl text-primary mt-1 shrink-0" />
+                    <div>
+                      <p className="text-sm opacity-70 font-semibold">Reviewed by</p>
+                      <p className="text-lg">{review.userName || 'Anonymous'}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-              <Link to="/all-reviews" className="btn btn-ghost">
-                Back to all reviews
-              </Link>
+          {/* Right Column - Summary Card */}
+          <div>
+            {/* Summary Card */}
+            <div className="card bg-linear-to-br from-primary to-primary-focus shadow-2xl sticky top-24">
+              <div className="card-body text-white">
+                <h2 className="card-title text-white text-2xl mb-6">Summary</h2>
+
+                <div className="divider divider-neutral"></div>
+
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm opacity-80 font-semibold">Dish Name</p>
+                    <p className="text-xl font-bold wrap-break-word">{review.foodName}</p>
+                  </div>
+
+                  <div>
+                    <p className="text-sm opacity-80 font-semibold">Restaurant</p>
+                    <p className="text-xl font-bold wrap-break-word">{review.restaurantName}</p>
+                  </div>
+
+                  <div>
+                    <p className="text-sm opacity-80 font-semibold">Rating</p>
+                    <div className="flex items-center gap-2 text-2xl font-bold">
+                      <FaStar className="text-yellow-300" />
+                      {review.starRating}/5
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-sm opacity-80 font-semibold">Favorites</p>
+                    <p className="text-xl font-bold flex items-center gap-2">
+                      <FaHeart /> {review.isFavoriteBy?.length || 0}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="divider divider-neutral"></div>
+
+                <button
+                  onClick={handleFavorite}
+                  disabled={favoring}
+                  className={`btn btn-wide w-full gap-2 ${
+                    isFavorite ? 'btn-warning text-white' : 'btn-secondary'
+                  }`}
+                >
+                  <FaHeart /> {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+                </button>
+
+                <Link to="/all-reviews" className="btn btn-outline btn-wide w-full gap-2">
+                  <FaArrowLeft /> Back to Reviews
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
     </SectionBody>
   );
 };

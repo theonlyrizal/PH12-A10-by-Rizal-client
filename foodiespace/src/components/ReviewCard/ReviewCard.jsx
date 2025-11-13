@@ -58,12 +58,12 @@ const ReviewCard = ({ review, onFavoriteChange }) => {
   };
 
   return (
-    <div className="card lg:card-side bg-base-100 shadow-sm hover:shadow-md transition-all duration-300">
-      <figure className="lg:w-1/3">
+    <div className="card card-side bg-base-100 shadow-sm hover:shadow-md transition-all duration-300 flex-col sm:flex-row">
+      <figure className="w-full sm:w-1/3 h-48 sm:h-auto">
         <img src={foodImage} alt={foodName} className="w-full h-full object-cover" />
       </figure>
 
-      <div className="card-body">
+      <div className="card-body w-full sm:w-2/3">
         <h2 className="card-title text-primary">{foodName}</h2>
         <p className="text-sm text-gray-500">
           <span className="font-semibold">{restaurantName}</span> — {restaurantLocation}
@@ -84,14 +84,15 @@ const ReviewCard = ({ review, onFavoriteChange }) => {
           <p>{new Date(createdAt).toLocaleDateString()}</p>
         </div>
 
-        <div className="card-actions justify-end gap-2">
+        <div className="card-actions justify-end gap-2 flex-wrap">
           <button
             onClick={handleFavorite}
             disabled={isFavoring}
             className={`btn btn-sm ${isFavorite ? 'btn-error' : 'btn-outline'} gap-2`}
           >
             <FaHeart size={14} />
-            {isFavorite ? 'Favorited' : 'Add to Favorites'}
+            <span className="hidden sm:inline">{isFavorite ? 'Favorited' : 'Add to Favorites'}</span>
+            <span className="sm:hidden">{isFavorite ? 'Fav' : 'Add'}</span>
           </button>
           <Link to={`/reviews/${_id}`} className="btn btn-primary btn-sm">
             View Details
