@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
-import { AuthContext } from '../../context/AuthContext';
+import { AuthContext } from '../../context/AuthContext/AuthContext';
 import SectionBody from '../../wrappers/SectionBody';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { FaArrowRight, FaGoogle } from 'react-icons/fa';

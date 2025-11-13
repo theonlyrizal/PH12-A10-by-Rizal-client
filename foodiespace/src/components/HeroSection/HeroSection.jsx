@@ -4,13 +4,13 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
 import 'swiper/css';
+import 'swiper/css/effect-fade';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
 // import required modules
-import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import { EffectFade, Autoplay, Pagination, Navigation } from 'swiper/modules';
 
-import gallery0 from '../../assets/images/gallery-0.jpg';
 import gallery1 from '../../assets/images/gallery-1.jpg';
 import gallery2 from '../../assets/images/gallery-2.jpg';
 import gallery3 from '../../assets/images/gallery-3.jpg';
@@ -20,27 +20,31 @@ const HeroSection = () => {
     <>
       <Swiper
         spaceBetween={30}
+        effect={'fade'}
         centeredSlides={true}
+        loop={true}
         autoplay={{
-          delay: 2500,
-          disableOnInteraction: false,
+          delay: 3000,
+          disableOnInteraction: true,
         }}
         pagination={{
           clickable: true,
         }}
-        navigation={true}
-        modules={[Autoplay, Pagination, Navigation]}
-        className="mySwiper"
+        navigation={false}
+        modules={[EffectFade, Autoplay, Pagination, Navigation]}
+        className="mySwiper h-150"
       >
-        <SwiperSlide>Slide 1</SwiperSlide>
-        <SwiperSlide>Slide 2</SwiperSlide>
-        <SwiperSlide>Slide 3</SwiperSlide>
-        <SwiperSlide>Slide 4</SwiperSlide>
-        <SwiperSlide>Slide 5</SwiperSlide>
-        <SwiperSlide>Slide 6</SwiperSlide>
-        <SwiperSlide>Slide 7</SwiperSlide>
-        <SwiperSlide>Slide 8</SwiperSlide>
-        <SwiperSlide>Slide 9</SwiperSlide>
+        <SwiperSlide>
+          <div className="flex flex-col">
+            <img src={gallery1} alt="Delicious Food" />
+          </div>
+        </SwiperSlide>
+        <SwiperSlide>
+          <img src={gallery2} alt="" />
+        </SwiperSlide>
+        <SwiperSlide>
+          <img src={gallery3} alt="" />
+        </SwiperSlide>
       </Swiper>
     </>
   );

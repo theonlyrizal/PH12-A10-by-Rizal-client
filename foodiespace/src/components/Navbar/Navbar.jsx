@@ -2,7 +2,7 @@ import { useLocalStorage } from '@uidotdev/usehooks';
 import React, { useContext, useEffect } from 'react';
 import { Link, NavLink } from 'react-router';
 import npcdp from '../../assets/images/npc-user.png';
-import { AuthContext } from '../../context/AuthContext';
+import { AuthContext } from '../../context/AuthContext/AuthContext';
 import logogif from '../../assets/images/logoGif.gif';
 
 const Navbar = () => {
@@ -122,7 +122,13 @@ const Navbar = () => {
               className="dropdown-content menu bg-base-100 rounded-box z-100 w-52 p-2 shadow-sm"
             >
               <li>
-                <Link to="/my-profile">My Profile</Link>
+                <Link to="/add-review">Add Review</Link>
+              </li>
+              <li>
+                <Link to="/my-reviews">My Reviews</Link>
+              </li>
+              <li>
+                <Link to="/my-favorites">My Favorites ❤️</Link>
               </li>
               <li>
                 <button

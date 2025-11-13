@@ -11,7 +11,7 @@ import {
   updateProfile,
 } from 'firebase/auth';
 import { AuthContext } from './AuthContext';
-import { auth } from '../firebase/firebase.init';
+import { auth } from '../../firebase/firebase.init';
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
