@@ -9,9 +9,7 @@ const HeroSectionAlt = () => {
       <div className="max-w-7xl mx-auto px-4">
         {/* Hero Text */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
-            Discover Amazing Food
-          </h1>
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">Discover Amazing Food</h1>
           <p className="text-xl text-white opacity-90 mb-8">
             Share your food experiences and explore reviews from our community
           </p>
