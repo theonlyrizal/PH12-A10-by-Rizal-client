@@ -10,6 +10,7 @@ import MyReviews from '../pages/MyReviews/MyReviews';
 import MyFavorites from '../pages/MyFavorites/MyFavorites';
 import NotFound from '../pages/NotFound/NotFound';
 import PrivateRoute from './PrivateRoute';
+import ReviewDetails from '../pages/ReviewDetails/ReviewDetails';
 
 export const routes = createBrowserRouter([
   {
@@ -46,6 +47,14 @@ export const routes = createBrowserRouter([
         element: (
           <PrivateRoute>
             <AddReview />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: '/reviews/:id',
+        element: (
+          <PrivateRoute>
+            <ReviewDetails />
           </PrivateRoute>
         ),
       },

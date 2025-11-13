@@ -3,6 +3,7 @@ import { FaStar, FaHeart } from 'react-icons/fa';
 import { AuthContext } from '../../context/AuthContext/AuthContext';
 import useAxios from '../../hooks/useAxios';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router';
 
 const ReviewCard = ({ review, onFavoriteChange }) => {
   const { user } = useContext(AuthContext);
@@ -92,7 +93,9 @@ const ReviewCard = ({ review, onFavoriteChange }) => {
             <FaHeart size={14} />
             {isFavorite ? 'Favorited' : 'Add to Favorites'}
           </button>
-          <button className="btn btn-primary btn-sm">View Details</button>
+          <Link to={`/reviews/${_id}`} className="btn btn-primary btn-sm">
+            View Details
+          </Link>
         </div>
       </div>
     </div>

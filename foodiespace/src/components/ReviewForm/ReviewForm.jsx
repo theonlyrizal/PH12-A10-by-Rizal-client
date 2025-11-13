@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { AuthContext } from '../../context/AuthContext/AuthContext';
 import { DataContext } from '../../context/DataContext/DataContext';
 import useAxios from '../../hooks/useAxios';
+import { auth } from '../../firebase/firebase.init';
 // Form inputs inlined to keep review form self-contained
 import { Rating } from 'next-flex-rating';
 
@@ -75,7 +76,18 @@ const ReviewForm = () => {
     setIsSubmitting(true);
 
     try {
-      const token = await user.getIdToken();
+      // Support both when `user` is a full Firebase User (has getIdToken)
+      // and when `user` is a plain object (some flows may replace it).
+      let token = null;
+      if (user && typeof user.getIdToken === 'function') {
+        token = await user.getIdToken();
+      } else if (auth && auth.currentUser && typeof auth.currentUser.getIdToken === 'function') {
+        token = await auth.currentUser.getIdToken();
+      }
+
+      if (!token) {
+        throw new Error('Authentication token not available. Please login again.');
+      }
 
       const reviewData = {
         foodName: formData.foodName,

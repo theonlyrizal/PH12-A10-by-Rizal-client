@@ -20,11 +20,11 @@ const AllReviews = () => {
       setHasSearched(false);
     } else {
       const q = searchQuery.toLowerCase();
-      const matched = (reviewsData || []).filter((r) =>
-        String(r.foodName || '')
-          .toLowerCase()
-          .includes(q)
-      );
+      const matched = (reviewsData || []).filter((r) => {
+        const food = String(r.foodName || '').toLowerCase();
+        const rest = String(r.restaurantName || '').toLowerCase();
+        return food.includes(q) || rest.includes(q);
+      });
       setFilteredReviews(matched);
     }
   }, [reviewsData, searchQuery]);
@@ -41,11 +41,11 @@ const AllReviews = () => {
       return;
     }
 
-    const matched = (reviewsData || []).filter((r) =>
-      String(r.foodName || '')
-        .toLowerCase()
-        .includes(q)
-    );
+    const matched = (reviewsData || []).filter((r) => {
+      const food = String(r.foodName || '').toLowerCase();
+      const rest = String(r.restaurantName || '').toLowerCase();
+      return food.includes(q) || rest.includes(q);
+    });
     setFilteredReviews(matched);
   };
 
@@ -74,7 +74,7 @@ const AllReviews = () => {
             <label className="label">
               <span className="label-text font-semibold text-lg flex items-center gap-2">
                 <FaSearch size={18} />
-                Search Reviews by Food Name
+                Search Reviews by Food or Restaurant
               </span>
             </label>
             <div className="input-group">
@@ -82,10 +82,10 @@ const AllReviews = () => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                placeholder="Search by food name (e.g., Biryani, Pizza, Sushi)..."
+                placeholder="Search by food or restaurant (e.g., Biryani, Kacchi Bhai)..."
                 className="input input-bordered w-full"
               />
-              {/* search is live on input change; no button needed */}
+
               {searchQuery && (
                 <button
                   type="button"
