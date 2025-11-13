@@ -19,7 +19,7 @@ const DataProvider = ({ children }) => {
     fetchReviews();
   }, [axiosInstance]);
 
-  console.log(reviewsData);
+  // console.log(reviewsData);
 
   return (
     <DataContext.Provider value={{ reviewsData, setReviewsData }}>{children}</DataContext.Provider>

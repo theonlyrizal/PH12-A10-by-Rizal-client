@@ -230,7 +230,7 @@ const ReviewForm = () => {
             <input
               type="url"
               name="foodImage"
-              value={formData.foodImage}
+              value={formData.foodImage || 'https://i.ibb.co.com/jvF5WxfL/mamar-hater-jadu.png'}
               onChange={handleInputChange}
               placeholder="e.g., https://example.com/image.jpg"
               className="input input-bordered w-full"
