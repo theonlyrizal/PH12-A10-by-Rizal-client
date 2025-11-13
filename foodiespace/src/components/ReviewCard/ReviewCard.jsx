@@ -91,7 +91,9 @@ const ReviewCard = ({ review, onFavoriteChange }) => {
             className={`btn btn-sm ${isFavorite ? 'btn-error' : 'btn-outline'} gap-2`}
           >
             <FaHeart size={14} />
-            <span className="hidden sm:inline">{isFavorite ? 'Favorited' : 'Add to Favorites'}</span>
+            <span className="hidden sm:inline">
+              {isFavorite ? 'Favorited' : 'Add to Favorites'}
+            </span>
             <span className="sm:hidden">{isFavorite ? 'Fav' : 'Add'}</span>
           </button>
           <Link to={`/reviews/${_id}`} className="btn btn-primary btn-sm">
