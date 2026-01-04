@@ -5,6 +5,7 @@ import useAxios from '../../hooks/useAxios';
 import SectionBody from '../../wrappers/SectionBody';
 import { FaStar } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import CloudinaryUploadWidget from '../../components/CloudinaryUploadWidget/CloudinaryUploadWidget';
 
 const EditReview = () => {
   const { id } = useParams();
@@ -69,11 +70,22 @@ const EditReview = () => {
       ...prev,
       [name]: value,
     }));
+  };
 
-    // Update image preview
-    if (name === 'foodImage') {
-      setImagePreview(value);
-    }
+  const handleImageUpload = (imageUrl) => {
+    setFormData((prev) => ({
+      ...prev,
+      foodImage: imageUrl,
+    }));
+    setImagePreview(imageUrl);
+  };
+
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({
+      ...prev,
+      foodImage: '',
+    }));
+    setImagePreview('');
   };
 
   const handleStarChange = (rating) => {
@@ -89,7 +101,7 @@ const EditReview = () => {
       return false;
     }
     if (!formData.foodImage.trim()) {
-      toast.error('Food image URL is required');
+      toast.error('Please upload a food image');
       return false;
     }
     if (!formData.restaurantName.trim()) {
@@ -193,37 +205,15 @@ const EditReview = () => {
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-semibold">Food Image URL *</span>
+                  <span className="label-text font-semibold">Food Image *</span>
                 </label>
-                <input
-                  type="url"
-                  name="foodImage"
-                  value={formData.foodImage}
-                  onChange={handleInputChange}
-                  placeholder="https://example.com/image.jpg"
-                  className="input input-bordered"
-                  required
+                <CloudinaryUploadWidget
+                  onUploadSuccess={handleImageUpload}
+                  currentImage={formData.foodImage}
+                  onRemove={handleRemoveImage}
+                  folder="foodiespace-reviews"
                 />
               </div>
-
-              {/* Image Preview */}
-              {imagePreview && (
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-semibold">Preview</span>
-                  </label>
-                  <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/300?text=Invalid+Image';
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 

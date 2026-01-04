@@ -6,7 +6,7 @@ import { AuthContext } from '../../context/AuthContext/AuthContext';
 import logogif from '../../assets/images/logoGif.gif';
 
 const Navbar = () => {
-  const { user, signOutUser, loading } = useContext(AuthContext);
+  const { user, signOutUser, loading, isAdmin } = useContext(AuthContext);
 
   const [isDark, setIsDark] = useLocalStorage('darkMode', false);
 
@@ -26,10 +26,23 @@ const Navbar = () => {
           All Reviews
         </NavLink>
       </li>
+      <li>
+        <NavLink className="rounded-full" to="/about">
+          About
+        </NavLink>
+      </li>
       {user && (
         <li>
           <NavLink className="rounded-full" to="/my-reviews">
             My Reviews
+          </NavLink>
+        </li>
+      )}
+
+      {isAdmin && (
+        <li>
+          <NavLink className="rounded-full" to="/admin">
+            Admin Panel
           </NavLink>
         </li>
       )}
@@ -39,19 +52,11 @@ const Navbar = () => {
           Add Review
         </NavLink>
       </li>
-
-      {/* {!user && (
-        <li>
-          <NavLink className="rounded-full" to="/login">
-            Login
-          </NavLink>
-        </li>
-      )} */}
     </>
   );
 
   return (
-    <div className="navbar bg-base-100 shadow-sm">
+    <div className="navbar bg-base-100 shadow-sm sticky top-0 z-50">
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -122,6 +127,9 @@ const Navbar = () => {
               className="dropdown-content menu bg-base-100 rounded-box z-100 w-52 p-2 shadow-sm"
             >
               <li>
+                <Link to="/dashboard">Dashboard</Link>
+              </li>
+              <li>
                 <Link to="/add-review">Add Review</Link>
               </li>
               <li>
@@ -129,6 +137,12 @@ const Navbar = () => {
               </li>
               <li>
                 <Link to="/my-favorites">My Favorites ❤️</Link>
+              </li>
+              <li>
+                <Link to="/contact">Contact</Link>
+              </li>
+              <li>
+                <Link to="/faq">FAQ</Link>
               </li>
               <li>
                 <button

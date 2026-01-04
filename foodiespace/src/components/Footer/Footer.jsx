@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 import logogif from '../../assets/images/logoGif.gif';
 import { FaXTwitter } from 'react-icons/fa6';
 import { FaFacebook, FaYoutube } from 'react-icons/fa';
@@ -36,10 +37,11 @@ const Footer = () => {
           <nav>
             <h6 className="footer-title text-lg font-bold mb-3">Company</h6>
             <div className="space-y-2">
-              <a className="link link-hover block">About us</a>
-              <a className="link link-hover block">Contact</a>
-              <a className="link link-hover block">Jobs</a>
-              <a className="link link-hover block">Press kit</a>
+              <Link to="/about" className="link link-hover block">About us</Link>
+              <Link to="/contact" className="link link-hover block">Contact</Link>
+              <Link to="/faq" className="link link-hover block">FAQ</Link>
+              <Link to="/privacy" className="link link-hover block">Privacy Policy</Link>
+              <Link to="/terms" className="link link-hover block">Terms of Service</Link>
             </div>
           </nav>
 
@@ -82,10 +84,11 @@ const Footer = () => {
           <nav className="text-center">
             <h6 className="footer-title text-lg font-bold mb-3">Company</h6>
             <div className="space-y-2">
-              <a className="link link-hover block">About us</a>
-              <a className="link link-hover block">Contact</a>
-              <a className="link link-hover block">Jobs</a>
-              <a className="link link-hover block">Press kit</a>
+              <Link to="/about" className="link link-hover block">About us</Link>
+              <Link to="/contact" className="link link-hover block">Contact</Link>
+              <Link to="/faq" className="link link-hover block">FAQ</Link>
+              <Link to="/privacy" className="link link-hover block">Privacy Policy</Link>
+              <Link to="/terms" className="link link-hover block">Terms of Service</Link>
             </div>
           </nav>
 

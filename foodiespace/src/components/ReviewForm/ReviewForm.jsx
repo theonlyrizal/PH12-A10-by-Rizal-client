@@ -6,6 +6,7 @@ import useAxios from '../../hooks/useAxios';
 import { auth } from '../../firebase/firebase.init';
 // Form inputs inlined to keep review form self-contained
 import { Rating } from 'next-flex-rating';
+import CloudinaryUploadWidget from '../CloudinaryUploadWidget/CloudinaryUploadWidget';
 
 const ReviewForm = () => {
   const { user } = useContext(AuthContext);
@@ -36,13 +37,27 @@ const ReviewForm = () => {
     }));
   };
 
+  const handleImageUpload = (imageUrl) => {
+    setFormData((prev) => ({
+      ...prev,
+      foodImage: imageUrl,
+    }));
+  };
+
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({
+      ...prev,
+      foodImage: '',
+    }));
+  };
+
   const validateForm = () => {
     if (!formData.foodName.trim()) {
       setError('Food name is required');
       return false;
     }
     if (!formData.foodImage.trim()) {
-      setError('Food image URL is required');
+      setError('Please upload a food image');
       return false;
     }
     if (!formData.restaurantName.trim()) {
@@ -223,30 +238,17 @@ const ReviewForm = () => {
           <div className="form-control w-full">
             <label className="label">
               <span className="label-text font-semibold">
-                Food Image URL
+                Food Image
                 <span className="text-red-500 ml-1">*</span>
               </span>
             </label>
-            <input
-              type="url"
-              name="foodImage"
-              value={formData.foodImage || 'https://i.ibb.co.com/jvF5WxfL/mamar-hater-jadu.png'}
-              onChange={handleInputChange}
-              placeholder="e.g., https://example.com/image.jpg"
-              className="input input-bordered w-full"
+            <CloudinaryUploadWidget
+              onUploadSuccess={handleImageUpload}
+              currentImage={formData.foodImage}
+              onRemove={handleRemoveImage}
+              folder="foodiespace-reviews"
             />
           </div>
-
-          {formData.foodImage && (
-            <div className="mt-4">
-              <p className="label-text font-semibold mb-2">Image Preview</p>
-              <img
-                src={formData.foodImage}
-                alt={formData.foodName}
-                className="w-full max-h-64 object-cover rounded-lg border border-gray-300"
-              />
-            </div>
-          )}
         </div>
       </div>
 

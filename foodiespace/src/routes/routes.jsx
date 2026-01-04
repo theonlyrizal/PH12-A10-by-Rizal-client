@@ -11,6 +11,19 @@ import MyFavorites from '../pages/MyFavorites/MyFavorites';
 import NotFound from '../pages/NotFound/NotFound';
 import PrivateRoute from './PrivateRoute';
 import ReviewDetails from '../pages/ReviewDetails/ReviewDetails';
+import About from '../pages/About/About';
+import Contact from '../pages/Contact/Contact';
+import FAQ from '../pages/FAQ/FAQ';
+import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
+import TermsOfService from '../pages/TermsOfService/TermsOfService';
+import DashboardLayout from '../pages/Dashboard/DashboardLayout';
+import DashboardOverview from '../pages/Dashboard/DashboardOverview';
+import UserProfile from '../pages/Dashboard/UserProfile';
+import AdminRoute from './AdminRoute';
+import AdminDashboard from '../pages/Admin/AdminDashboard';
+import ReviewApproval from '../pages/Admin/ReviewApproval';
+import AllReviewsAdmin from '../pages/Admin/AllReviews';
+import UserManagement from '../pages/Admin/UserManagement';
 
 export const routes = createBrowserRouter([
   {
@@ -25,6 +38,26 @@ export const routes = createBrowserRouter([
       {
         path: '/all-reviews',
         element: <AllReviews />,
+      },
+      {
+        path: '/about',
+        element: <About />,
+      },
+      {
+        path: '/contact',
+        element: <Contact />,
+      },
+      {
+        path: '/faq',
+        element: <FAQ />,
+      },
+      {
+        path: '/privacy',
+        element: <PrivacyPolicy />,
+      },
+      {
+        path: '/terms',
+        element: <TermsOfService />,
       },
       {
         path: '/my-reviews',
@@ -52,11 +85,7 @@ export const routes = createBrowserRouter([
       },
       {
         path: '/reviews/:id',
-        element: (
-          <PrivateRoute>
-            <ReviewDetails />
-          </PrivateRoute>
-        ),
+        element: <ReviewDetails />, // Now publicly accessible
       },
       {
         path: '/edit-review/:id',
@@ -65,6 +94,50 @@ export const routes = createBrowserRouter([
             <EditReview />
           </PrivateRoute>
         ),
+      },
+      {
+        path: '/dashboard',
+        element: (
+          <PrivateRoute>
+            <DashboardLayout />
+          </PrivateRoute>
+        ),
+        children: [
+          {
+            index: true,
+            element: <DashboardOverview />,
+          },
+          {
+            path: 'profile',
+            element: <UserProfile />,
+          },
+        ],
+      },
+      {
+        path: '/admin',
+        element: (
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        ),
+        children: [
+          {
+            index: true,
+            element: <div>Overview Stats (Coming Soon)</div>,
+          },
+          {
+            path: 'pending-reviews',
+            element: <ReviewApproval />,
+          },
+          {
+            path: 'all-reviews',
+            element: <AllReviewsAdmin />,
+          },
+          {
+            path: 'users',
+            element: <UserManagement />,
+          },
+        ],
       },
       {
         path: '/login',

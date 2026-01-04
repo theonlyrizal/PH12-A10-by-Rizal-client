@@ -62,6 +62,7 @@ const Register = () => {
         name,
         email,
         photoURL: photo,
+        role: 'user', // Default role for new users
         createdAt: new Date(),
         favorites: [],
       };
@@ -86,6 +87,7 @@ const Register = () => {
           name: result.user.displayName,
           email: result.user.email,
           photoURL: result.user.photoURL,
+          role: 'user', // Default role for new users
           createdAt: new Date(),
           favorites: [],
         };

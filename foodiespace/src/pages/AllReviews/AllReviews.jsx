@@ -1,61 +1,95 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { FaSearch, FaTimes } from 'react-icons/fa';
+import { FaSearch, FaTimes, FaFilter, FaSort } from 'react-icons/fa';
 import { FaUtensils } from 'react-icons/fa6';
+import { Rating } from 'next-flex-rating';
 
 import SectionBody from '../../wrappers/SectionBody';
 import { DataContext } from '../../context/DataContext/DataContext';
 import ReviewsContainer from '../../components/ReviewsContainer/ReviewsContainer';
-// toast removed: client-side search no longer uses server notifications
 
 const AllReviews = () => {
   const { reviewsData } = useContext(DataContext);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchPayload, setSearchPayload] = useState({ foodName: '' });
   const [filteredReviews, setFilteredReviews] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
+  
+  // Filter states
+  const [ratingFilter, setRatingFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('all');
+  
+  // Sort state
+  const [sortBy, setSortBy] = useState('newest');
 
   useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredReviews(null);
-      setHasSearched(false);
-    } else {
+    let result = reviewsData || [];
+
+    // Apply search
+    if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      const matched = (reviewsData || []).filter((r) => {
+      result = result.filter((r) => {
         const food = String(r.foodName || '').toLowerCase();
         const rest = String(r.restaurantName || '').toLowerCase();
         return food.includes(q) || rest.includes(q);
       });
-      setFilteredReviews(matched);
-    }
-  }, [reviewsData, searchQuery]);
-
-  const handleSearchChange = (value) => {
-    setSearchQuery(value);
-    setSearchPayload({ foodName: value });
-    setHasSearched(true);
-
-    const q = value.trim().toLowerCase();
-    if (!q) {
-      setFilteredReviews(null);
-      setHasSearched(false);
-      return;
     }
 
-    const matched = (reviewsData || []).filter((r) => {
-      const food = String(r.foodName || '').toLowerCase();
-      const rest = String(r.restaurantName || '').toLowerCase();
-      return food.includes(q) || rest.includes(q);
-    });
-    setFilteredReviews(matched);
-  };
+    // Apply rating filter
+    if (ratingFilter !== 'all') {
+      const rating = parseInt(ratingFilter);
+      result = result.filter(r => r.starRating === rating);
+    }
 
-  const handleClearSearch = () => {
+    // Apply date filter
+    if (dateFilter !== 'all') {
+      const now = new Date();
+      result = result.filter(r => {
+        const reviewDate = new Date(r.timestamp);
+        const diffDays = (now - reviewDate) / (1000 * 60 * 60 * 24);
+        
+        if (dateFilter === 'week') return diffDays <= 7;
+        if (dateFilter === 'month') return diffDays <= 30;
+        if (dateFilter === 'year') return diffDays <= 365;
+        return true;
+      });
+    }
+
+    // Apply sorting
+    if (sortBy === 'rating-high') {
+      result = [...result].sort((a, b) => b.starRating - a.starRating);
+    } else if (sortBy === 'rating-low') {
+      result = [...result].sort((a, b) => a.starRating - b.starRating);
+    } else if (sortBy === 'favorites') {
+      result = [...result].sort((a, b) => 
+        (b.isFavoriteBy?.length || 0) - (a.isFavoriteBy?.length || 0)
+      );
+    } else if (sortBy === 'oldest') {
+      result = [...result].sort((a, b) => 
+        new Date(a.timestamp) - new Date(b.timestamp)
+      );
+    } else { // newest  
+      result = [...result].sort((a, b) => 
+        new Date(b.timestamp) - new Date(a.timestamp)
+      );
+    }
+
+    setFilteredReviews(result);
+  }, [reviewsData, searchQuery, ratingFilter, dateFilter, sortBy]);
+
+  const handleClearFilters = () => {
     setSearchQuery('');
-    setFilteredReviews(null);
+    setRatingFilter('all');
+    setDateFilter('all');
+    setSortBy('newest');
     setHasSearched(false);
   };
 
-  const displayReviews = filteredReviews !== null ? filteredReviews : reviewsData;
+  const activeFiltersCount = 
+    (ratingFilter !== 'all' ? 1 : 0) +
+    (dateFilter !== 'all' ? 1 : 0) +
+    (sortBy !== 'newest' ? 1 : 0) +
+    (searchQuery.trim() ? 1 : 0);
+
+  const displayReviews = filteredReviews || reviewsData || [];
 
   return (
     <div>
@@ -68,28 +102,31 @@ const AllReviews = () => {
       </div>
 
       <SectionBody>
-        {/* Search Bar (client-side, search on change) */}
-        <div className="mb-8">
+        {/* Search and Filter Controls */}
+        <div className="mb-8 space-y-4">
+          {/* Search Bar */}
           <div className="form-control">
             <label className="label">
               <span className="label-text font-semibold text-lg flex items-center gap-2">
                 <FaSearch size={18} />
-                Search Reviews by Food or Restaurant
+                Search Reviews
               </span>
             </label>
             <div className="input-group">
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                placeholder="Search by food or restaurant (e.g., Biryani, Kacchi Bhai)..."
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setHasSearched(true);
+                }}
+                placeholder="Search by food or restaurant name..."
                 className="input input-bordered w-full"
               />
-
               {searchQuery && (
                 <button
                   type="button"
-                  onClick={handleClearSearch}
+                  onClick={() => setSearchQuery('')}
                   className="btn btn-ghost"
                   title="Clear search"
                 >
@@ -97,40 +134,106 @@ const AllReviews = () => {
                 </button>
               )}
             </div>
-            <label className="label">
-              <span className="label-text-alt text-gray-500">
-                {hasSearched
-                  ? `Showing ${displayReviews.length} result(s) for "${
-                      searchPayload.foodName || searchQuery
-                    }"`
-                  : 'Type to search reviews client-side'}
-              </span>
-            </label>
           </div>
-        </div>
 
-        {hasSearched && (
-          <div className="alert alert-info mb-6">
-            <div>
-              <span>
-                {filteredReviews.length === 0
-                  ? `No reviews found for "${
-                      searchPayload.foodName || searchQuery
-                    }". Try a different search term.`
-                  : `Found ${filteredReviews.length} review(s) matching "${
-                      searchPayload.foodName || searchQuery
-                    }"`}
-              </span>
+          {/* Filters and Sort */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Rating Filter */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-semibold flex items-center gap-2">
+                  <FaFilter size={14} />
+                  Rating
+                </span>
+              </label>
+              <select
+                value={ratingFilter}
+                onChange={(e) => setRatingFilter(e.target.value)}
+                className="select select-bordered w-full"
+              >
+                <option value="all">All Ratings</option>
+                <option value="5">⭐⭐⭐⭐⭐ (5 Stars)</option>
+                <option value="4">⭐⭐⭐⭐ (4 Stars)</option>
+                <option value="3">⭐⭐⭐ (3 Stars)</option>
+                <option value="2">⭐⭐ (2 Stars)</option>
+                <option value="1">⭐ (1 Star)</option>
+              </select>
+            </div>
+
+            {/* Date Filter */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-semibold flex items-center gap-2">
+                  <FaFilter size={14} />
+                  Date Added
+                </span>
+              </label>
+              <select
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="select select-bordered w-full"
+              >
+                <option value="all">All Time</option>
+                <option value="week">Last Week</option>
+                <option value="month">Last Month</option>
+                <option value="year">Last Year</option>
+              </select>
+            </div>
+
+            {/* Sort */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-semibold flex items-center gap-2">
+                  <FaSort size={14} />
+                  Sort By
+                </span>
+              </label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="select select-bordered w-full"
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="rating-high">Highest Rated</option>
+                <option value="rating-low">Lowest Rated</option>
+                <option value="favorites">Most Favorited</option>
+              </select>
+            </div>
+
+            {/* Clear Filters Button */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text opacity-0">.</span>
+              </label>
+              <button
+                onClick={handleClearFilters}
+                disabled={activeFiltersCount === 0}
+                className="btn btn-outline btn-error w-full"
+              >
+                <FaTimes /> Clear All {activeFiltersCount > 0 && `(${activeFiltersCount})`}
+              </button>
             </div>
           </div>
-        )}
+
+          {/* Active Filters Info */}
+          {activeFiltersCount > 0 && (
+            <div className="alert alert-info">
+              <div className="flex-1">
+                <span>
+                  Showing {displayReviews.length} result(s) with {activeFiltersCount} active filter(s)
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
       </SectionBody>
 
       <ReviewsContainer
         reviews={displayReviews || []}
         emptyMessage={
-          hasSearched && filteredReviews?.length === 0
-            ? `No reviews found for "${searchQuery}". Browse other reviews instead!`
+          activeFiltersCount > 0
+            ? 'No reviews match your filters. Try adjusting your search criteria.'
             : 'No reviews available'
         }
       />

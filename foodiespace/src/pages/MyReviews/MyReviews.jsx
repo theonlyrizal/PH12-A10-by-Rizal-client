@@ -171,6 +171,7 @@ const MyReviews = () => {
               <th>Food Name</th>
               <th>Restaurant</th>
               <th>Rating</th>
+              <th>Status</th>
               <th>Posted Date</th>
               <th className="text-center">Actions</th>
             </tr>
@@ -217,6 +218,13 @@ const MyReviews = () => {
                     <FaStar className="text-yellow-400" size={14} />
                     <span className="font-bold">{review.starRating}/5</span>
                   </div>
+                </td>
+
+                {/* Status */}
+                <td>
+                  {review.status === 'approved' && <span className="badge badge-success badge-sm">Approved</span>}
+                  {review.status === 'rejected' && <span className="badge badge-error badge-sm text-white">Rejected</span>}
+                  {(review.status === 'pending' || !review.status) && <span className="badge badge-warning badge-sm">Pending</span>}
                 </td>
 
                 {/* Posted Date */}
