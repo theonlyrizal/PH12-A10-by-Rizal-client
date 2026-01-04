@@ -6,6 +6,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { FaArrowRight, FaGoogle } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import useAxios from '../../hooks/useAxios';
+import CloudinaryUploadWidget from '../../components/CloudinaryUploadWidget/CloudinaryUploadWidget';
 
 const Register = () => {
   const { createUser, updateUserProfile, signInWithGoogle } = useContext(AuthContext);
@@ -13,6 +14,7 @@ const Register = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [photoURL, setPhotoURL] = useState('');
 
   useEffect(() => {
     if (error) toast.error(error);
@@ -43,7 +45,7 @@ const Register = () => {
     const email = e.target.email.value;
     const password = e.target.password.value;
     const name = e.target.name.value;
-    const photo = e.target.photo.value;
+    // const photo = e.target.photo.value; // Replaced by state
 
     setSuccess(false);
     setError('');
@@ -55,13 +57,13 @@ const Register = () => {
 
     try {
       await createUser(email, password);
-      await updateUserProfile(name, photo);
+      await updateUserProfile(name, photoURL);
 
       //make user
       const newUser = {
         name,
         email,
-        photoURL: photo,
+        photoURL: photoURL, // Use state instead of form value
         role: 'user', // Default role for new users
         createdAt: new Date(),
         favorites: [],
@@ -111,12 +113,12 @@ const Register = () => {
           <legend className="text-3xl text-primary font-bold">Register</legend>
           <label className="label">Name</label>{' '}
           <input name="name" type="text" className="input" placeholder="John Marston" required />
-          <label className="label">Photo URL</label>{' '}
-          <input
-            name="photo"
-            type="text"
-            className="input"
-            placeholder="Leave blank for default image"
+          <label className="label">Photo</label>{' '}
+          <CloudinaryUploadWidget 
+            onUploadSuccess={(url) => setPhotoURL(url)}
+            currentImage={photoURL}
+            onRemove={() => setPhotoURL('')}
+            folder="foodiespace/users"
           />
           <label className="label">Email</label>{' '}
           <input
