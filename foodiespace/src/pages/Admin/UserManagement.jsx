@@ -2,7 +2,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext/AuthContext';
 import useAxios from '../../hooks/useAxios';
 import { toast } from 'react-toastify';
-import { FaUserShield, FaUser } from 'react-icons/fa';
+import { FaUserShield, FaUser, FaTrash } from 'react-icons/fa';
+import Swal from 'sweetalert2';
 
 const UserManagement = () => {
   const { user } = useContext(AuthContext);
@@ -45,6 +46,41 @@ const UserManagement = () => {
     } catch (error) {
       toast.error('Failed to update role');
     }
+  };
+
+  const handleDeleteUser = async (userToDelete) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to delete ${userToDelete.email}. This action cannot be undone!`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const token = await user.getIdToken();
+          await axiosInstance.delete(`/users/${userToDelete._id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          Swal.fire(
+            'Deleted!',
+            'User has been deleted.',
+            'success'
+          );
+          fetchUsers();
+        } catch (error) {
+          console.error(error);
+          Swal.fire(
+            'Error!',
+            error.response?.data?.message || 'Failed to delete user.',
+            'error'
+          );
+        }
+      }
+    });
   };
 
   if (loading) {
@@ -104,6 +140,15 @@ const UserManagement = () => {
                       className="btn btn-xs btn-outline"
                     >
                       Make {u.role === 'admin' ? 'User' : 'Admin'}
+                    </button>
+                  )}
+                  {u.email !== user.email && (
+                    <button 
+                      onClick={() => handleDeleteUser(u)}
+                      className="btn btn-xs btn-error btn-outline ml-2"
+                      title="Delete User"
+                    >
+                      <FaTrash />
                     </button>
                   )}
                 </td>
